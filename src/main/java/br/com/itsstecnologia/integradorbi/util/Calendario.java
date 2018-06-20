@@ -27,7 +27,7 @@ public class Calendario {
         if (cal.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY
                 || cal.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY) return false;
         else {
-            for (Feriado feriado : Config.getParametros().getFeriados()) {
+            for (Feriado feriado : Config.getParametrosGlobal().getFeriados()) {
                 if (getData(cal).compareTo(getData(feriado.getData())) == 0) return false;
             }
             return true;

@@ -55,30 +55,30 @@ public class CalculaSLA {
         if (bool) {
             if (!Calendario.ehDiaUtil(dataFinal)) {
                 descontaNaoUtil();
-                setHora(Config.getParametros().getHoraDeEntrada());
+                setHora(Config.getParametrosGlobal().getHoraDeEntrada());
                 ajustaHorario(true);
-            } else if (Calendario.getHora(dataFinal).compareTo(Calendario.getHora(Config.getParametros().getHoraDeEntrada())) < 0) {
+            } else if (Calendario.getHora(dataFinal).compareTo(Calendario.getHora(Config.getParametrosGlobal().getHoraDeEntrada())) < 0) {
                 dataFinal.add(Calendar.MINUTE,
-                        Calendario.diffMinutos(Calendario.getHora(dataFinal), Config.getParametros().getHoraDeEntrada()));
-            } else if (Calendario.getHora(dataFinal).compareTo(Calendario.getHora(Config.getParametros().getHorarioDeAlmoco())) > 0
-                    && Calendario.getHora(dataFinal).compareTo(Calendario.getHora(Config.getParametros().getHorarioDeRetorno())) < 0) {
-                setHora(Config.getParametros().getHorarioDeRetorno());
-            } else if (Calendario.getHora(dataFinal).compareTo(Calendario.getHora(Config.getParametros().getHoraDeSaida())) >= 0) {
+                        Calendario.diffMinutos(Calendario.getHora(dataFinal), Config.getParametrosGlobal().getHoraDeEntrada()));
+            } else if (Calendario.getHora(dataFinal).compareTo(Calendario.getHora(Config.getParametrosGlobal().getHorarioDeAlmoco())) > 0
+                    && Calendario.getHora(dataFinal).compareTo(Calendario.getHora(Config.getParametrosGlobal().getHorarioDeRetorno())) < 0) {
+                setHora(Config.getParametrosGlobal().getHorarioDeRetorno());
+            } else if (Calendario.getHora(dataFinal).compareTo(Calendario.getHora(Config.getParametrosGlobal().getHoraDeSaida())) >= 0) {
                 dataFinal.add(Calendar.DATE, 1);
-                setHora(Config.getParametros().getHoraDeEntrada());
+                setHora(Config.getParametrosGlobal().getHoraDeEntrada());
             }
         } else {
             if (!Calendario.ehDiaUtil(dataFinal)) {
                 descontaNaoUtil();
                 ajustaHorario(false);
-            } else if (Calendario.getHora(dataFinal).compareTo(Calendario.getHora(Config.getParametros().getHoraDeEntrada())) < 0) {
+            } else if (Calendario.getHora(dataFinal).compareTo(Calendario.getHora(Config.getParametrosGlobal().getHoraDeEntrada())) < 0) {
                 dataFinal.add(Calendar.MINUTE,
-                        Calendario.diffMinutos(Calendario.getHora(dataFinal), Config.getParametros().getHoraDeEntrada()));
-            } else if (Calendario.getHora(dataFinal).compareTo(Calendario.getHora(Config.getParametros().getHorarioDeAlmoco())) > 0
-                    && Calendario.getHora(dataFinal).compareTo(Calendario.getHora(Config.getParametros().getHorarioDeRetorno())) < 0) {
-                dataFinal.add(Calendar.MILLISECOND, (int) Config.getParametros().getTempoDeAlmoco());
-            } else if (Calendario.getHora(dataFinal).compareTo(Calendario.getHora(Config.getParametros().getHoraDeSaida())) > 0) {
-                dataFinal.add(Calendar.MILLISECOND, (int) Config.getParametros().getHorasUteis());
+                        Calendario.diffMinutos(Calendario.getHora(dataFinal), Config.getParametrosGlobal().getHoraDeEntrada()));
+            } else if (Calendario.getHora(dataFinal).compareTo(Calendario.getHora(Config.getParametrosGlobal().getHorarioDeAlmoco())) > 0
+                    && Calendario.getHora(dataFinal).compareTo(Calendario.getHora(Config.getParametrosGlobal().getHorarioDeRetorno())) < 0) {
+                dataFinal.add(Calendar.MILLISECOND, (int) Config.getParametrosGlobal().getTempoDeAlmoco());
+            } else if (Calendario.getHora(dataFinal).compareTo(Calendario.getHora(Config.getParametrosGlobal().getHoraDeSaida())) > 0) {
+                dataFinal.add(Calendar.MILLISECOND, (int) Config.getParametrosGlobal().getHorasUteis());
             }
         }
     }
@@ -96,10 +96,10 @@ public class CalculaSLA {
 
 
     private static SLA getSLA(Demanda demanda) {
-        for (SLA sla : Config.getParametros().getSLAs())
+        for (SLA sla : Config.getParametrosGlobal().getSLAs())
             if (Objects.equals(sla.getEmpresa(), demanda.getEmpresa()) && sla.getPrioridade() == demanda.getPrioridade())
                 return sla;
-        for (SLA sla : Config.getParametros().getSLAs()) {
+        for (SLA sla : Config.getParametrosGlobal().getSLAs()) {
             if (sla.getPrioridade() == demanda.getPrioridade()) return sla;
         }
 

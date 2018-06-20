@@ -1,28 +1,30 @@
 package br.com.itsstecnologia.integradorbi.service.read;
 
-
-import br.com.itsstecnologia.integradorbi.config.params.Parametros;
+import br.com.itsstecnologia.integradorbi.Log.LogService;
 import br.com.itsstecnologia.integradorbi.entity.Demanda;
 import br.com.itsstecnologia.integradorbi.enums.Estado;
 import br.com.itsstecnologia.integradorbi.enums.Prioridade;
 import br.com.itsstecnologia.integradorbi.repository.DemandaRepository;
-import br.com.itsstecnologia.integradorbi.util.Calendario;
 import br.com.itsstecnologia.integradorbi.util.Config;
 import jxl.Cell;
 import jxl.Sheet;
 import jxl.Workbook;
 import jxl.WorkbookSettings;
 import jxl.read.biff.BiffException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 
 import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.logging.Level;
 
 import static java.util.Calendar.getInstance;
 
-public class ReadExcel {
+@Controller
+public class ReadExcel extends Thread {
 
     private final String EXCEL_FILE_LOCATION = "C:\\Users\\ITSS\\Desktop\\Demandas.xls";
     private final int INDEX_TITLES_COLUMS = 1;
@@ -30,8 +32,11 @@ public class ReadExcel {
     private Workbook workbook;
     private Sheet sheet;
 
-    public ReadExcel(){
+    private final DemandaRepository repository;
 
+    @Autowired
+    public ReadExcel(DemandaRepository repository) {
+        this.repository = repository;
         try {
             WorkbookSettings workbookSettings = new WorkbookSettings();
             workbookSettings.setEncoding("ISO-8859-1");
@@ -51,11 +56,12 @@ public class ReadExcel {
             map.put("Data/Hora de Entrada no Estado", null);
         } catch (IOException | BiffException e) {
             e.printStackTrace();
+            new LogService(e, Level.SEVERE);
         }
     }
 
-    public void read(DemandaRepository repository) {
-        List<Demanda> demandas = new ArrayList<>();
+    @Override
+    public void run() {
         Integer id;
         String titulo;
         String empresa;
@@ -64,37 +70,38 @@ public class ReadExcel {
         String destino;
         Estado estado;
         Prioridade prioridade;
-        Calendar dataAlteracao = getInstance();
-        Calendar dataCriacao = getInstance();
-        Calendar dataEntradaNoEstado = getInstance();
+        Calendar dataAlteracao;
+        Calendar dataCriacao;
+        Calendar dataEntradaNoEstado;
         Calendar calendar = getInstance();
         calendar.add(Calendar.MONTH, -2);
         try {
-            instaciaMap();
-            for (int indx = INDEX_TITLES_COLUMS + 1; indx < sheet.getRows(); indx++) {
-                id = Integer.parseInt(sheet.getCell(map.get("Id"), indx).getContents());
-                titulo = sheet.getCell(map.get("Título"), indx).getContents();
-                empresa = sheet.getCell(map.get("Empresa"), indx).getContents();
-                estado = classificaEstado(sheet.getCell(map.get("Estado"), indx).getContents());
-                status = sheet.getCell(map.get("Estado"), indx).getContents();
-                destino = sheet.getCell(map.get("Destino"), indx).getContents();
-                prioridade = classificaPrioridade(sheet.getCell(map.get("Prioridade"), indx).getContents());
-                dataAlteracao = setData(sheet.getCell(map.get("Data da Alteração"), indx).getContents(),Config.getParametros().getDate());
-                responsavel = sheet.getCell(map.get("Responsável Atendimento"), indx).getContents();
-                dataCriacao = setData(sheet.getCell(map.get("Data/Hora de Criação"), indx).getContents(), Config.getParametros().getDateTime());
-                dataEntradaNoEstado = setData(sheet.getCell(map.get("Data/Hora de Entrada no Estado"), indx).getContents(), Config.getParametros().getDateTime());
-                Demanda demanda = new Demanda(id, titulo, empresa, estado, status, destino, prioridade, dataAlteracao,
-                         dataCriacao, dataEntradaNoEstado, responsavel);
-                if ((demanda.getEstado() != Estado.CONCLUIDO)
-                        || (demanda.getDataAlteracao().compareTo(calendar) >= 0)) {
-                    repository.save(demanda);
-                    System.out.println(demanda.toString());
+            while (Config.getParametrosGlobal().isRodandoAtualizacao()) {
+                instaciaMap();
+                for (int indx = INDEX_TITLES_COLUMS + 1; indx < sheet.getRows(); indx++) {
+                    id = Integer.parseInt(sheet.getCell(map.get("Id"), indx).getContents());
+                    titulo = sheet.getCell(map.get("Título"), indx).getContents();
+                    empresa = sheet.getCell(map.get("Empresa"), indx).getContents();
+                    estado = classificaEstado(sheet.getCell(map.get("Estado"), indx).getContents());
+                    status = sheet.getCell(map.get("Estado"), indx).getContents();
+                    destino = sheet.getCell(map.get("Destino"), indx).getContents();
+                    prioridade = classificaPrioridade(sheet.getCell(map.get("Prioridade"), indx).getContents());
+                    dataAlteracao = setData(sheet.getCell(map.get("Data da Alteração"), indx).getContents(), Config.getParametrosGlobal().getDate());
+                    responsavel = sheet.getCell(map.get("Responsável Atendimento"), indx).getContents();
+                    dataCriacao = setData(sheet.getCell(map.get("Data/Hora de Criação"), indx).getContents(), Config.getParametrosGlobal().getDateTime());
+                    dataEntradaNoEstado = setData(sheet.getCell(map.get("Data/Hora de Entrada no Estado"), indx).getContents(), Config.getParametrosGlobal().getDateTime());
+                    Demanda demanda = new Demanda(id, titulo, empresa, estado, status, destino, prioridade, dataAlteracao,
+                            dataCriacao, dataEntradaNoEstado, responsavel);
+                    if ((demanda.getEstado() != Estado.CONCLUIDO)
+                            || (demanda.getDataAlteracao().compareTo(calendar) >= 0)) {
+                        repository.save(demanda);
+                    }
                 }
+                Thread.sleep(Config.getParametrosGlobal().getTempo().getTempo());
             }
-            demandas.forEach(demanda -> System.out.println(demanda.toString()));
-        //    persistir(demandas, repository);
         } catch (Exception e) {
-            e.printStackTrace();
+            LogService logService = new LogService(e, Level.SEVERE);
+            logService.start();
         } finally {
             if (workbook != null) {
                 workbook.close();
@@ -103,9 +110,9 @@ public class ReadExcel {
 
     }
 
-    private Calendar setData(String data_da_alteração, SimpleDateFormat smpdtf) throws ParseException {
+    private Calendar setData(String dataDaAlteracao, SimpleDateFormat smpdtf) throws ParseException {
         Calendar data = getInstance();
-        data.setTime(smpdtf.parse(data_da_alteração));
+        data.setTime(smpdtf.parse(dataDaAlteracao));
         return data;
     }
 

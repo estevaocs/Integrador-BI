@@ -6,10 +6,10 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class Config {
 
-    private static Parametros parametros = new Parametros();
+    private static Parametros parametrosGlobal = new Parametros();
 
-    public static Parametros getParametros() {
-        return parametros;
+    public static Parametros getParametrosGlobal() {
+        return parametrosGlobal;
     }
 
 }

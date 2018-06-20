@@ -1,7 +1,6 @@
 package br.com.itsstecnologia.integradorbi.service.read;
 
 import br.com.itsstecnologia.integradorbi.entity.Demanda;
-import br.com.itsstecnologia.integradorbi.enums.Estado;
 import br.com.itsstecnologia.integradorbi.enums.Prioridade;
 import br.com.itsstecnologia.integradorbi.util.Config;
 import org.junit.Assert;
@@ -35,9 +34,9 @@ public class testaCaulaSLA {
     @Test
     public void teste1() {
         try {
-            dataCriacao.setTime(Config.getParametros().getDateTime().parse("14/06/2018 14:00"));
-            dataAlteracao.setTime(Config.getParametros().getDateTime().parse("14/06/2018 14:00"));
-            esperado.setTime(Config.getParametros().getDateTime().parse("14/06/2018 18:00"));
+            dataCriacao.setTime(Config.getParametrosGlobal().getDateTime().parse("14/06/2018 14:00"));
+            dataAlteracao.setTime(Config.getParametrosGlobal().getDateTime().parse("14/06/2018 14:00"));
+            esperado.setTime(Config.getParametrosGlobal().getDateTime().parse("14/06/2018 18:00"));
             empresa = "empresa";
             status = "Em Atendimento N1";
             prioridade = Prioridade.URGENTE;

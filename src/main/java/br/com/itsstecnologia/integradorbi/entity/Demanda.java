@@ -201,10 +201,10 @@ public class Demanda {
                 ", Status: " + status +
                 ", Destino: " + destino +
                 ", Prioridade: " + prioridade +
-                ", Data Alteração: " + Config.getParametros().getDateTime().format(dataAlteracao.getTime()) +
-                ", Data de Entrada no Estado: " + Config.getParametros().getDateTime().format(dataEntradaNoEstado.getTime()) +
-                ", Data Final: " + Config.getParametros().getDateTime().format(dataFinal.getTime()) +
-                ", Data de Criacao :" + Config.getParametros().getDateTime().format(dataCriacao.getTime()) +
+                ", Data Alteração: " + Config.getParametrosGlobal().getDateTime().format(dataAlteracao.getTime()) +
+                ", Data de Entrada no Estado: " + Config.getParametrosGlobal().getDateTime().format(dataEntradaNoEstado.getTime()) +
+                ", Data Final: " + Config.getParametrosGlobal().getDateTime().format(dataFinal.getTime()) +
+                ", Data de Criacao :" + Config.getParametrosGlobal().getDateTime().format(dataCriacao.getTime()) +
                 ", responsavel: " + responsavel +
                 '}';
     }

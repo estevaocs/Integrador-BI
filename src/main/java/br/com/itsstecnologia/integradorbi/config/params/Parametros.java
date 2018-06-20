@@ -4,6 +4,7 @@ package br.com.itsstecnologia.integradorbi.config.params;
 import br.com.itsstecnologia.integradorbi.entity.Feriado;
 import br.com.itsstecnologia.integradorbi.entity.SLA;
 import br.com.itsstecnologia.integradorbi.enums.Prioridade;
+import br.com.itsstecnologia.integradorbi.enums.TempoAtualizacao;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -26,6 +27,8 @@ public class Parametros {
     private long horasUteis;
     private List<SLA> slas;
     private List<Feriado> feriados;
+    private boolean RodandoAtualizacao;
+    private TempoAtualizacao tempo;
 
     public Parametros() {
         feriados = new ArrayList<>();
@@ -35,6 +38,8 @@ public class Parametros {
         horaDeSaida.set(1970, Calendar.FEBRUARY, 1, 18, 0);
         horarioDeAlmoco.set(1970, Calendar.FEBRUARY, 1, 12, 0);
         horarioDeRetorno.set(1970, Calendar.FEBRUARY, 1, 13, 30);
+
+        tempo = TempoAtualizacao.A_CADA_15_MINUTOS;
 
         atualizar();
         instaciaSLA();
@@ -102,5 +107,29 @@ public class Parametros {
 
     public List<Feriado> getFeriados() {
         return feriados;
+    }
+
+    public String getDateFormat() {
+        return dateFormat;
+    }
+
+    public String getDateTimeFormat() {
+        return dateTimeFormat;
+    }
+
+    public String getHorarioFormat() {
+        return horarioFormat;
+    }
+
+    public List<SLA> getSlas() {
+        return slas;
+    }
+
+    public boolean isRodandoAtualizacao() {
+        return RodandoAtualizacao;
+    }
+
+    public TempoAtualizacao getTempo() {
+        return tempo;
     }
 }

@@ -7,10 +7,10 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
+
 @SpringBootApplication
 public class IntegradorbiApplication {
 
-    private static ReadExcel rdxls;
 
     public static void main(String[] args) {
         SpringApplication.run(IntegradorbiApplication.class, args);
@@ -18,14 +18,12 @@ public class IntegradorbiApplication {
 
     @Bean
     CommandLineRunner init(DemandaRepository repository) {
-        return args -> {
-            initRead(repository);
-        };
+        return args -> initRead(repository);
 
     }
 
     private void initRead(DemandaRepository repository) {
-        rdxls = new ReadExcel();
-        rdxls.read(repository);
+        ReadExcel rdxls = new ReadExcel(repository);
+        rdxls.start();
     }
 }
